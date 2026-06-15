@@ -1,11 +1,14 @@
 databases:
   - name: optiflow-db
     plan: free
-    postgresMajorVersion: "15"
 
 services:
-  - type: redis
+  # Deploy Redis as a private Docker service (100% free, avoids paid managed Redis errors)
+  - type: pserv
     name: optiflow-redis
+    env: image
+    image:
+      url: redis:alpine
     plan: free
 
   - type: web
@@ -20,10 +23,7 @@ services:
           name: optiflow-db
           property: connectionString
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: optiflow-redis
-          property: connectionString
+        value: redis://optiflow-redis:6379/0
       - key: GROQ_API_KEY
         sync: false
       - key: CORS_ORIGINS
