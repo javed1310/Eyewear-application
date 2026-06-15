@@ -3,11 +3,13 @@ databases:
     plan: free
 
 services:
+  # The entire full-stack application served via a single Web Service.
+  # This guarantees compliance with Render's free tier limits (1 Web Service + 1 DB).
   - type: web
-    name: optiflow-backend
+    name: optiflow-fullstack
     env: docker
-    dockerContext: ./backend
-    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    dockerfilePath: ./render.Dockerfile
     plan: free
     envVars:
       - key: DATABASE_URL
@@ -15,7 +17,7 @@ services:
           name: optiflow-db
           property: connectionString
       - key: REDIS_URL
-        sync: false # User must provide external Redis URL
+        sync: false # Provide your Upstash URL here
       - key: GROQ_API_KEY
         sync: false
       - key: CORS_ORIGINS
@@ -28,16 +30,3 @@ services:
         sync: false
       - key: TWILIO_WHATSAPP_FROM
         sync: false
-
-  - type: web
-    name: optiflow-frontend
-    env: node
-    plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm run preview -- --host 0.0.0.0 --port 10000
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: optiflow-backend
-          property: url

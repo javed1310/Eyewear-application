@@ -4,8 +4,10 @@ Main application with health check, CORS, and router mounting.
 """
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import redis.asyncio as redis
 
 from app.core.config import settings
@@ -61,6 +63,25 @@ app.include_router(inventory.router, prefix="/api/v1")
 app.include_router(prescriptions.router, prefix="/api/v1")
 app.include_router(alerts.router, prefix="/api/v1")
 app.include_router(websockets.router)
+
+import os
+
+# Serve React Frontend (Static Files) if the directory exists
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if os.path.exists(static_dir):
+    app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+    
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Ignore API routes
+        if full_path.startswith("api/"):
+            return {"error": "Not Found"}
+            
+        file_path = os.path.join(static_dir, full_path)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return FileResponse(file_path)
+            
+        return FileResponse(os.path.join(static_dir, "index.html"))
 
 
 # ── Health Check ──
