@@ -20,8 +20,6 @@ services:
         sync: false # Provide your Upstash URL here
       - key: GROQ_API_KEY
         sync: false
-      - key: CORS_ORIGINS
-        value: "*"
       - key: RESEND_API_KEY
         sync: false
       - key: TWILIO_ACCOUNT_SID

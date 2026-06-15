@@ -4,13 +4,12 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ ./
-# Use an empty API URL during build so it defaults to relative paths (hitting the same origin)
 ENV VITE_API_URL=""
 RUN npm run build
 
 # Stage 2: Build the FastAPI Backend
 FROM python:3.12-slim
-WORKDIR /app
+WORKDIR /app/backend
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
@@ -20,10 +19,10 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
-COPY backend/ ./backend/
+COPY backend/ .
 
 # Copy frontend build from Stage 1 into the backend's static folder
-COPY --from=frontend-builder /app/frontend/dist ./backend/static
+COPY --from=frontend-builder /app/frontend/dist ./static
 
 # Expose the port Render expects
 EXPOSE 10000
@@ -32,5 +31,5 @@ EXPOSE 10000
 ENV PYTHONPATH=/app/backend
 ENV PORT=10000
 
-# Start Uvicorn
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "10000"]
+# Run migrations and start Uvicorn
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
