@@ -84,6 +84,16 @@ async def create_order(order_in: OrderCreate, db: AsyncSession = Depends(get_db)
     await db.commit()
     await db.refresh(order)
     
+    # ── AI Inventory Matching & SLA Assignment ──
+    # PRD requirement: "Once customer order is placed the system needs to tell if the power is in house or not"
+    try:
+        from app.services.matching_engine import process_inventory_check
+        await process_inventory_check(db, order)
+        await db.commit()
+        await db.refresh(order)
+    except Exception as e:
+        print(f"[WARNING] Auto-matching failed: {e}")
+    
     # Broadcast creation event
     await broadcast_order_update(order.id, "created", {"status": order.status})
     
