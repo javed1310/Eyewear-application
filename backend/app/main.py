@@ -21,14 +21,20 @@ import asyncio
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events for the application."""
-    # Startup
-    db_core.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
-    
     # Auto-create all database tables
     await db_core.init_db()
-    
-    # Start background workers
-    app.state.risk_worker = asyncio.create_task(start_risk_evaluator_loop(60))
+
+    # Startup Redis and Background Workers
+    if settings.REDIS_URL and settings.REDIS_URL.strip():
+        try:
+            db_core.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+            # Start background workers only if Redis is available (required for pubsub)
+            app.state.risk_worker = asyncio.create_task(start_risk_evaluator_loop(60))
+            print("[OK] Redis connected and Risk Worker started")
+        except Exception as e:
+            print(f"[WARNING] Invalid REDIS_URL provided. WebSockets will be disabled. Error: {e}")
+    else:
+        print("[WARNING] REDIS_URL is empty. WebSockets and Risk Worker are disabled.")
     
     print(f"[OK] {settings.APP_NAME} started | Debug={settings.DEBUG}")
 
