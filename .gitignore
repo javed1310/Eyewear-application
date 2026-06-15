@@ -1,0 +1,50 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+!.env.example
+
+# Database
+*.db
+*.sqlite3
+
+# ML models (tracked separately or via LFS)
+backend/ml/*.pkl
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+frontend/dist/
+
+# Logs
+*.log
+
+# Extracted text files
+*.txt
+!requirements.txt
+!README.md
+
+# Docker
+*.pem

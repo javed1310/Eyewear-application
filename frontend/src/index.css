@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── OptiFlow Global Styles ── */
+
+@layer base {
+  * {
+    @apply border-surface-700;
+  }
+
+  body {
+    @apply bg-surface-950 text-surface-100 font-sans;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-900 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-600 rounded-full hover:bg-surface-500;
+  }
+}
+
+@layer components {
+  /* ── Glassmorphism Card ── */
+  .glass-card {
+    @apply bg-surface-800/60 backdrop-blur-md border border-surface-700/50 
+           rounded-xl shadow-lg shadow-black/20;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 
+           hover:bg-surface-800/80 hover:border-surface-600/60 
+           hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5;
+  }
+
+  /* ── Gradient Backgrounds ── */
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-500;
+  }
+
+  .gradient-accent {
+    @apply bg-gradient-to-r from-accent-600 to-accent-500;
+  }
+
+  .gradient-header {
+    @apply bg-gradient-to-r from-surface-900 via-surface-800 to-surface-900;
+  }
+
+  /* ── Risk Level Badges ── */
+  .badge-ontrack {
+    @apply bg-risk-ontrack/15 text-risk-ontrack border border-risk-ontrack/30 
+           px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  .badge-atrisk {
+    @apply bg-risk-atrisk/15 text-risk-atrisk border border-risk-atrisk/30 
+           px-2.5 py-0.5 rounded-full text-xs font-semibold animate-pulse-slow;
+  }
+
+  .badge-breached {
+    @apply bg-risk-breached/15 text-risk-breached border border-risk-breached/30 
+           px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium text-sm
+           gradient-primary text-white
+           hover:opacity-90 active:scale-[0.98]
+           transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-primary-500/50;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium text-sm
+           bg-surface-700 text-surface-200
+           hover:bg-surface-600 active:scale-[0.98]
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-surface-500/50;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 rounded-lg font-medium text-sm
+           bg-risk-breached/20 text-risk-breached border border-risk-breached/30
+           hover:bg-risk-breached/30 active:scale-[0.98]
+           transition-all duration-200;
+  }
+
+  /* ── Form Inputs ── */
+  .input-field {
+    @apply w-full px-3 py-2 rounded-lg
+           bg-surface-900 border border-surface-600
+           text-surface-100 placeholder-surface-500
+           focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500
+           transition-all duration-200;
+  }
+
+  .input-error {
+    @apply border-risk-breached focus:ring-risk-breached/50;
+  }
+
+  /* ── Status Stage Pills ── */
+  .stage-pill {
+    @apply px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-accent-400;
+  }
+}

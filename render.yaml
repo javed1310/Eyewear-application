@@ -1,0 +1,56 @@
+services:
+  # 1. PostgreSQL Database
+  - type: psql
+    name: optiflow-db
+    plan: free
+    version: 15
+
+  # 2. Redis Cache
+  - type: redis
+    name: optiflow-redis
+    plan: free
+
+  # 3. FastAPI Backend
+  - type: web
+    name: optiflow-backend
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: optiflow-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: optiflow-redis
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*" # To allow the frontend to communicate
+      # Notification keys (optional)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+
+  # 4. React Frontend
+  - type: web
+    name: optiflow-frontend
+    env: node
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run preview -- --host 0.0.0.0 --port 10000
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: optiflow-backend
+          property: url
