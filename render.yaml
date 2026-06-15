@@ -1,16 +1,13 @@
-services:
-  # 1. PostgreSQL Database
-  - type: psql
-    name: optiflow-db
+databases:
+  - name: optiflow-db
     plan: free
-    version: 15
+    postgresMajorVersion: "15"
 
-  # 2. Redis Cache
+services:
   - type: redis
     name: optiflow-redis
     plan: free
 
-  # 3. FastAPI Backend
   - type: web
     name: optiflow-backend
     env: docker
@@ -30,8 +27,7 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: CORS_ORIGINS
-        value: "*" # To allow the frontend to communicate
-      # Notification keys (optional)
+        value: "*"
       - key: RESEND_API_KEY
         sync: false
       - key: TWILIO_ACCOUNT_SID
@@ -41,7 +37,6 @@ services:
       - key: TWILIO_WHATSAPP_FROM
         sync: false
 
-  # 4. React Frontend
   - type: web
     name: optiflow-frontend
     env: node
