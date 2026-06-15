@@ -24,6 +24,9 @@ async def lifespan(app: FastAPI):
     # Startup
     db_core.redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
     
+    # Auto-create all database tables
+    await db_core.init_db()
+    
     # Start background workers
     app.state.risk_worker = asyncio.create_task(start_risk_evaluator_loop(60))
     

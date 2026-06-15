@@ -31,5 +31,5 @@ EXPOSE 10000
 ENV PYTHONPATH=/app/backend
 ENV PORT=10000
 
-# Run migrations and start Uvicorn
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
+# Start Uvicorn (tables are auto-created in main.py)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
