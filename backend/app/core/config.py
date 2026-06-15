@@ -21,6 +21,26 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://optiflow:optiflow@localhost:5432/optiflow"
     DATABASE_URL_SYNC: str = "postgresql://optiflow:optiflow@localhost:5432/optiflow"
 
+    @property
+    def async_database_url(self) -> str:
+        # Render provides `postgres://`, but asyncpg requires `postgresql+asyncpg://`
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
+
+    @property
+    def sync_database_url(self) -> str:
+        # Alembic uses psycopg2 or pg8000, which requires `postgresql://`
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql://", 1)
+        elif url.startswith("postgresql+asyncpg://"):
+            return url.replace("postgresql+asyncpg://", "postgresql://", 1)
+        return url
+
     # ── Redis ──
     REDIS_URL: str = "redis://localhost:6379/0"
 
