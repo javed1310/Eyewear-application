@@ -35,6 +35,21 @@ def generate_order_number() -> str:
 async def create_order(order_in: OrderCreate, db: AsyncSession = Depends(get_db)):
     """Create a new order with prescription, lens spec, and frame."""
     
+    from app.models.customer import Customer
+
+    # Ensure customer exists (auto-create a mock customer for the demo)
+    cust_result = await db.execute(select(Customer).where(Customer.id == order_in.customer_id))
+    customer = cust_result.scalar_one_or_none()
+    if not customer:
+        customer = Customer(
+            id=order_in.customer_id,
+            name="Demo Customer",
+            email="demo@optiflow.demo",
+            phone="+1234567890"
+        )
+        db.add(customer)
+        await db.flush()
+
     # Create the core order
     order = Order(
         order_number=generate_order_number(),
