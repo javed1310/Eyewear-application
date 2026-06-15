@@ -3,14 +3,6 @@ databases:
     plan: free
 
 services:
-  # Deploy Redis as a private Docker service (100% free, avoids paid managed Redis errors)
-  - type: pserv
-    name: optiflow-redis
-    env: image
-    image:
-      url: redis:alpine
-    plan: free
-
   - type: web
     name: optiflow-backend
     env: docker
@@ -23,7 +15,7 @@ services:
           name: optiflow-db
           property: connectionString
       - key: REDIS_URL
-        value: redis://optiflow-redis:6379/0
+        sync: false # User must provide external Redis URL
       - key: GROQ_API_KEY
         sync: false
       - key: CORS_ORIGINS
