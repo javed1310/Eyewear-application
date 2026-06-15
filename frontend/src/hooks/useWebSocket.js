@@ -6,10 +6,10 @@ export function useWebSocket(onMessage) {
   const ws = useRef(null)
   
   useEffect(() => {
-    const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-    const url = new URL(apiURL, window.location.href)
-    const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-    const wsUrl = `${protocol}//${url.host}/ws/stream`
+    // In production (served by FastAPI), use the same host. In development, use localhost.
+    const host = import.meta.env.PROD ? window.location.host : 'localhost:8000'
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const wsUrl = `${protocol}//${host}/ws/stream`
     
     const connect = () => {
       ws.current = new WebSocket(wsUrl)

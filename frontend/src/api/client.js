@@ -6,7 +6,9 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// In production (when served by FastAPI), use relative paths so it hits the same domain.
+// In development (when running Vite dev server), hit the local FastAPI instance.
+const API_URL = import.meta.env.PROD ? '' : 'http://localhost:8000'
 
 const api = axios.create({
   baseURL: API_URL,
