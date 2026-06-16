@@ -24,6 +24,37 @@ async def lifespan(app: FastAPI):
     # Auto-create all database tables
     await db_core.init_db()
 
+    # Auto-seed Inventory if empty
+    from sqlalchemy.future import select
+    from app.models.inventory import InventoryItem
+    from app.models.enums import LensType
+    from decimal import Decimal
+    
+    async with db_core.async_session_factory() as session:
+        result = await session.execute(select(InventoryItem))
+        if not result.scalars().first():
+            print("[SEED] Seeding default inventory...")
+            items = [
+                InventoryItem(
+                    lens_type=LensType.SINGLE_VISION, lens_index=Decimal("1.61"), coatings=["Anti-Reflective"],
+                    power_min=Decimal("-4.00"), power_max=Decimal("+2.00"), qty_on_hand=150, reorder_threshold=50
+                ),
+                InventoryItem(
+                    lens_type=LensType.SINGLE_VISION, lens_index=Decimal("1.67"), coatings=["Anti-Reflective", "Blue Light"],
+                    power_min=Decimal("-8.00"), power_max=Decimal("-4.00"), qty_on_hand=18, reorder_threshold=25
+                ),
+                InventoryItem(
+                    lens_type=LensType.PROGRESSIVE, lens_index=Decimal("1.50"), coatings=["Anti-Reflective"],
+                    power_min=Decimal("-2.00"), power_max=Decimal("+2.00"), qty_on_hand=80, reorder_threshold=25
+                ),
+                InventoryItem(
+                    lens_type=LensType.BIFOCAL, lens_index=Decimal("1.50"), coatings=["Anti-Reflective"],
+                    power_min=Decimal("-4.00"), power_max=Decimal("+2.00"), qty_on_hand=45, reorder_threshold=15
+                )
+            ]
+            session.add_all(items)
+            await session.commit()
+
     # Startup Redis and Background Workers
     if settings.REDIS_URL and settings.REDIS_URL.strip():
         try:
